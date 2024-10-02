@@ -22,17 +22,6 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "bucket_sse" {
 
 }
 
-resource "aws_s3_bucket_acl" "bucket_acl" {
-  count  = length(var.bucket_names)
-  bucket = "${var.prefix}-${var.bucket_names[count.index]}-${var.account_id}"
-  acl    = "private"
-
-   depends_on = [
-    aws_s3_bucket.buckets
-  ]
-
-}
-
 # Rules for public access block
 resource "aws_s3_bucket_public_access_block" "public_access_block" {
   count  = length(var.bucket_names)
