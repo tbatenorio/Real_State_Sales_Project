@@ -29,7 +29,6 @@ variable "bucket_names" {
   default = [
     "raw",
     "processed",
-    "result-athena",
     "aws-glue-scripts"
   ]
 }
