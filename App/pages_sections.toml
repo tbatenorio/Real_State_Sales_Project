@@ -1,0 +1,12 @@
+[[pages]]
+path = "pages/Presentation.py"
+name = "Apresentação"
+
+[[pages]]
+path = "pages/Home.py"
+name = "Página Inicial"
+
+[[pages]]
+path = "pages/DashBoard.py"
+name = "DashBoard"
+
