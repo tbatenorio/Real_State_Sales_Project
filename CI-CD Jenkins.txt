@@ -1,0 +1,42 @@
+pipeline {
+    agent any
+    environment{
+        AWS_DEFAULT_REGION="us-east-1"
+        THE_BUTLER_SAYS_SO=credentials('jk-aws-credentials')
+        ECS_CLUSTER = 'ecs-cluster-ec2'
+        ECS_SERVICE = 'streamlit-app-service'
+    }
+
+    stages {
+        stage('Jenkins user checking aws version') {
+            steps {
+                sh 'aws --version' 
+            }
+        }
+        
+        stage('Jenkins user accessing AWS CodeCommit') {
+            steps {
+               git branch: 'main', credentialsId: 'jk-aws-cc-cred', url: 'https://git-codecommit.us-east-1.amazonaws.com/v1/repos/Real_State_App'
+            }
+        }
+        
+        stage('Building and Pushing Image to ECR') {
+            steps {
+               sh '''
+                    docker logout
+                		aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 386283720018.dkr.ecr.us-east-1.amazonaws.com
+                		docker build -t real-state-app .
+                		docker tag real-state-app:latest 386283720018.dkr.ecr.us-east-1.amazonaws.com/real-state-app:latest
+                		docker push 386283720018.dkr.ecr.us-east-1.amazonaws.com/real-state-app:latest
+	        '''
+            }
+        }
+        
+        stage('Jenkins ECS') {
+            steps {
+               sh 'aws ecs update-service --cluster $ECS_CLUSTER --service $ECS_SERVICE --force-new-deployment'
+            }
+        }
+        
+    }
+}
